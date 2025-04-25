@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Validador - Painel de Controle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">API Validador</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="navClients">Clientes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="navApiDocs">Documentação da API</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="navChatGPT">Integração ChatGPT</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <span class="navbar-text me-3" id="userInfo" style="display: none;">
+                            Administrador
+                        </span>
+                        <button class="btn btn-outline-danger btn-sm" id="logoutBtn" style="display: none;">Sair</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Seção de Login -->
+        <div id="loginSection" class="card">
+            <div class="card-header">Login de Administrador</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="adminPassword" class="form-label">Senha de Administrador</label>
+                    <input type="password" class="form-control" id="adminPassword" placeholder="Digite a senha de administrador">
+                </div>
+                <button class="btn btn-primary" id="loginBtn">Entrar</button>
+                <div class="alert alert-danger mt-3" id="loginError" style="display: none;">
+                    Senha incorreta. Tente novamente.
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal (visível após login) -->
+        <div id="mainContent" style="display: none;">
+            <!-- Seção de Clientes -->
+            <div id="clientsSection">
+                <!-- Dashboard de Estatísticas -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card dashboard-stats">
+                            <div class="number" id="totalClientsCount">0</div>
+                            <div class="label">Total de Clientes</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card dashboard-stats">
+                            <div class="number" id="activeClientsCount">0</div>
+                            <div class="label">Clientes Ativos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card dashboard-stats">
+                            <div class="number" id="expiredClientsCount">0</div>
+                            <div class="label">Clientes Expirados</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card dashboard-stats">
+                            <div class="number" id="totalUsageCount">0</div>
+                            <div class="label">Total de Acessos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Gerenciamento de Clientes</h2>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                        Adicionar Cliente
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        Lista de Clientes
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID do Cliente</th>
+                                        <th>Chave de API</th>
+                                        <th>Data Limite</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientsTableBody">
+                                    <!-- Dados dos clientes serão inseridos aqui via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-info" id="noClientsMessage" style="display: none;">
+                            Nenhum cliente cadastrado. Adicione um cliente usando o botão acima.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Documentação da API -->
+            <div id="apiDocsSection" style="display: none;">
+                <h2>Documentação da API</h2>
+                <div class="card">
+                    <div class="card-header">
+                        Endpoints Disponíveis
+                    </div>
+                    <div class="card-body">
+                        <h5>Endpoint de Validação</h5>
+                        <div class="api-example">
+                            <p><strong>POST /api/validate</strong></p>
+                            <p>Headers: X-API-Key: [chave_do_cliente]</p>
+                            <p>Body: {"request_data": "dados opcionais"}</p>
+                            <p>Resposta (acesso válido):</p>
+                            <pre>{
+  "valid": true,
+  "message": "Access is valid",
+  "client_id": "Cliente Teste",
+  "limit_date": "2025-12-31",
+  "current_date": "2025-04-23"
+}</pre>
+                        </div>
+
+                        <h5 class="mt-4">Endpoint de Status</h5>
+                        <div class="api-example">
+                            <p><strong>GET /api/status</strong></p>
+                            <p>Resposta:</p>
+                            <pre>{
+  "status": "online",
+  "timestamp": "2025-04-23T14:11:50.076202"
+}</pre>
+                        </div>
+
+                        <h5 class="mt-4">Autenticação de Administrador</h5>
+                        <div class="api-example">
+                            <p><strong>POST /api/admin/login</strong></p>
+                            <p>Headers: X-Admin-Password: [senha_admin]</p>
+                            <p>Resposta:</p>
+                            <pre>{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expires": "2025-04-24T18:12:01.226589"
+}</pre>
+                        </div>
+
+                        <h5 class="mt-4">Mais Informações</h5>
+                        <p>Para documentação completa, consulte o <a href="/docs" target="_blank">README.md</a>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Integração com ChatGPT -->
+            <div id="chatGPTSection" style="display: none;">
+                <h2>Integração com ChatGPT</h2>
+                <div class="card">
+                    <div class="card-header">
+                        Como Integrar com Agentes do ChatGPT
+                    </div>
+                    <div class="card-body">
+                        <h5>Visão Geral</h5>
+                        <p>A integração da API de Validação com agentes do ChatGPT permite verificar se um cliente tem acesso válido antes de fornecer serviços através do agente.</p>
+
+                        <h5 class="mt-4">Métodos de Integração</h5>
+                        <ul>
+                            <li><strong>Integração Direta via Ações do ChatGPT</strong> - Usando as Actions nativas do ChatGPT</li>
+                            <li><strong>Integração via API Intermediária</strong> - Criando uma API intermediária para lógica mais complexa</li>
+                            <li><strong>Integração via Webhook</strong> - Usando webhooks para processamento assíncrono</li>
+                        </ul>
+
+                        <h5 class="mt-4">Exemplo de Configuração</h5>
+                        <div class="api-example">
+                            <p>// Configuração da Ação no ChatGPT</p>
+                            <p>Nome: ValidateAccess</p>
+                            <p>URL: https://[seu-dominio]/api/validate</p>
+                            <p>Método: POST</p>
+                            <p>Headers: X-API-Key: {api_key}</p>
+                            <p>Body: {"request_data": "ChatGPT Agent Access"}</p>
+                        </div>
+
+                        <h5 class="mt-4">Mais Informações</h5>
+                        <p>Para instruções detalhadas, consulte o <a href="/integration" target="_blank">Guia de Integração</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Adicionar/Editar Cliente -->
+        <div class="modal fade" id="addClientModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Adicionar Cliente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="clientForm">
+                            <input type="hidden" id="editMode" value="add">
+                            <input type="hidden" id="originalApiKey" value="">
+                            
+                            <div class="mb-3">
+                                <label for="clientId" class="form-label">ID do Cliente</label>
+                                <input type="text" class="form-control" id="clientId" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="apiKey" class="form-label">Chave de API</label>
+                                <input type="text" class="form-control" id="apiKey" required>
+                                <div class="form-text">Identificador único para o cliente.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="limitDate" class="form-label">Data Limite</label>
+                                <input type="date" class="form-control" id="limitDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Observações</label>
+                                <textarea class="form-control" id="notes" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="saveClientBtn">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação de Exclusão -->
+        <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja excluir o cliente <span id="deleteClientName"></span>?</p>
+                        <p>Esta ação não pode ser desfeita.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Detalhes do Cliente -->
+        <div class="modal fade" id="clientDetailsModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detalhes do Cliente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Informações Básicas</h6>
+                                <table class="table">
+                                    <tr>
+                                        <th>ID do Cliente:</th>
+                                        <td id="detailClientId"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Chave de API:</th>
+                                        <td id="detailApiKey"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Data Limite:</th>
+                                        <td id="detailLimitDate"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status:</th>
+                                        <td id="detailStatus"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Criado em:</th>
+                                        <td id="detailCreatedAt"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Atualizado em:</th>
+                                        <td id="detailUpdatedAt"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Observações</h6>
+                                <p id="detailNotes" class="border p-2" style="min-height: 100px;"></p>
+                            </div>
+                        </div>
+                        
+                        <h6 class="mt-4">Histórico de Uso</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Hora</th>
+                                        <th>IP</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usageTableBody">
+                                    <!-- Dados de uso serão inseridos aqui via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="noUsageMessage" style="display: none;">
+                            Nenhum registro de uso encontrado.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-primary" id="editClientBtn">Editar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <p>API Validador &copy; 2025 - Todos os direitos reservados</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>
