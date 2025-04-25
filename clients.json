@@ -1,0 +1,25 @@
+{
+    "clients": {
+        "cliente_teste_123": {
+            "client_id": "Cliente Teste",
+            "limit_date": "2025-12-31",
+            "created_at": "2025-04-23T14:12:01.236986",
+            "updated_at": "2025-04-23T14:12:01.236995",
+            "notes": "Cliente para testes",
+            "usage": [
+                {
+                    "date": "2025-04-23",
+                    "timestamp": "2025-04-23T14:12:31.020208",
+                    "ip": "127.0.0.1"
+                }
+            ]
+        },
+        "cliente_expirado": {
+            "client_id": "Cliente Expirado",
+            "limit_date": "2023-12-31",
+            "created_at": "2025-04-23T14:12:31.028600",
+            "updated_at": "2025-04-23T14:12:31.028607",
+            "notes": "Cliente com data expirada"
+        }
+    }
+}

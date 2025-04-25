@@ -1,0 +1,20 @@
+version: '3'
+services:
+  api_validador:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/data
+    environment:
+      - ADMIN_PASSWORD=senha_admin_segura
+      - JWT_SECRET_KEY=chave_secreta_muito_segura_para_jwt
+      - RATE_LIMIT=100
+      - CLIENTS_FILE=/data/clients.json
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
